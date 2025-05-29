@@ -1,0 +1,31 @@
+---
+title: "quiz22"
+author: "Joseph Zhao"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+capital_data <- read.csv("capital_cities.csv")
+head(capital_data)
+names(capital_data)
+country_names <- capital_data$Country.Name
+coordinates_capital_cities <- as.matrix(capital_data[, c("Capital.Latitude", "Capital.Longitude")])
+
+us_indices <- which(country_names == "United States" | country_names == "US Minor Outlying Islands")
+coordinates_filtered <- coordinates_capital_cities[-us_indices, ]
+countries_filtered <- country_names[-us_indices]
+index_dc <- which(country_names == "United States")
+dc_coords <- coordinates_capital_cities[index_dc, ]
+
+dc_matrix <- matrix(rep(dc_coords, nrow(coordinates_filtered)), 
+                    nrow = nrow(coordinates_filtered), byrow = TRUE)
+differences <- dc_matrix - coordinates_filtered
+distances <- apply(differences^2, 1, sum)^0.5
+top_10_indices <- order(distances)[1:10]
+top_10_countries <- countries_filtered[top_10_indices]
+top_10_coordinates <- coordinates_filtered[top_10_indices, ]
+
+top_10_countries
+top_10_coordinates
+```
